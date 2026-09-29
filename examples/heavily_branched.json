@@ -1,0 +1,833 @@
+{
+  "schema": 1,
+  "name": "Heavily branched feeder",
+  "settings": {
+    "nominal_kv_ll": 12.47,
+    "fault_3ph_a": 7000,
+    "fault_slg_a": 6000,
+    "x_over_r": 8,
+    "min_fault_resistance_ohm": 20.0,
+    "philosophy": "fuse_saving",
+    "preferred_link_type": "K"
+  },
+  "placement": {
+    "mainline_rule": "three_phase",
+    "fuse_transformers": true,
+    "fuse_laterals": true,
+    "fuse_sublaterals": true,
+    "sectionalize_long_laterals": true,
+    "sectionalize_length_ft": 5280.0,
+    "max_fuses_in_series": 3
+  },
+  "nodes": [
+    {
+      "id": "SRC",
+      "name": "Substation",
+      "x": 0.0,
+      "y": 0.0,
+      "kind": "source"
+    },
+    {
+      "id": "B1",
+      "name": "B1",
+      "x": 240,
+      "y": 0,
+      "kind": "bus"
+    },
+    {
+      "id": "B2",
+      "name": "B2",
+      "x": 480,
+      "y": 0,
+      "kind": "bus"
+    },
+    {
+      "id": "B3",
+      "name": "B3",
+      "x": 720,
+      "y": 0,
+      "kind": "bus"
+    },
+    {
+      "id": "B4",
+      "name": "B4",
+      "x": 960,
+      "y": 0,
+      "kind": "bus"
+    },
+    {
+      "id": "B5",
+      "name": "B5",
+      "x": 1200,
+      "y": 0,
+      "kind": "bus"
+    },
+    {
+      "id": "B6",
+      "name": "B6",
+      "x": 240,
+      "y": 140,
+      "kind": "bus"
+    },
+    {
+      "id": "B7",
+      "name": "B7",
+      "x": 240,
+      "y": 280,
+      "kind": "bus"
+    },
+    {
+      "id": "B8",
+      "name": "B8",
+      "x": 400,
+      "y": 280,
+      "kind": "bus"
+    },
+    {
+      "id": "T1",
+      "name": "T1",
+      "x": 320,
+      "y": 140,
+      "kva": 25,
+      "phases": "A",
+      "kind": "transformer"
+    },
+    {
+      "id": "T2",
+      "name": "T2",
+      "x": 160,
+      "y": 140,
+      "kva": 50,
+      "phases": "A",
+      "kind": "transformer"
+    },
+    {
+      "id": "T3",
+      "name": "T3",
+      "x": 160,
+      "y": 280,
+      "kva": 25,
+      "phases": "A",
+      "kind": "transformer"
+    },
+    {
+      "id": "T4",
+      "name": "T4",
+      "x": 480,
+      "y": 280,
+      "kva": 37.5,
+      "phases": "A",
+      "kind": "transformer"
+    },
+    {
+      "id": "B9",
+      "name": "B9",
+      "x": 240,
+      "y": 420,
+      "kind": "bus"
+    },
+    {
+      "id": "T5",
+      "name": "T5",
+      "x": 320,
+      "y": 420,
+      "kva": 25,
+      "phases": "A",
+      "kind": "transformer"
+    },
+    {
+      "id": "T6",
+      "name": "T6",
+      "x": 160,
+      "y": 420,
+      "kva": 25,
+      "phases": "A",
+      "kind": "transformer"
+    },
+    {
+      "id": "B10",
+      "name": "B10",
+      "x": 480,
+      "y": -140,
+      "kind": "bus"
+    },
+    {
+      "id": "T7",
+      "name": "T7",
+      "x": 560,
+      "y": -140,
+      "kva": 150,
+      "phases": "ABC",
+      "kind": "transformer"
+    },
+    {
+      "id": "B11",
+      "name": "B11",
+      "x": 480,
+      "y": -280,
+      "kind": "bus"
+    },
+    {
+      "id": "B12",
+      "name": "B12",
+      "x": 320,
+      "y": -280,
+      "kind": "bus"
+    },
+    {
+      "id": "B13",
+      "name": "B13",
+      "x": 640,
+      "y": -280,
+      "kind": "bus"
+    },
+    {
+      "id": "T8",
+      "name": "T8",
+      "x": 320,
+      "y": -400,
+      "kva": 50,
+      "phases": "B",
+      "kind": "transformer"
+    },
+    {
+      "id": "T9",
+      "name": "T9",
+      "x": 640,
+      "y": -400,
+      "kva": 25,
+      "phases": "C",
+      "kind": "transformer"
+    },
+    {
+      "id": "T10",
+      "name": "T10",
+      "x": 480,
+      "y": -400,
+      "kva": 75,
+      "phases": "ABC",
+      "kind": "transformer"
+    },
+    {
+      "id": "B14",
+      "name": "B14",
+      "x": 720,
+      "y": 140,
+      "kind": "bus"
+    },
+    {
+      "id": "B15",
+      "name": "B15",
+      "x": 720,
+      "y": 280,
+      "kind": "bus"
+    },
+    {
+      "id": "T11",
+      "name": "T11",
+      "x": 800,
+      "y": 140,
+      "kva": 25,
+      "phases": "B",
+      "kind": "transformer"
+    },
+    {
+      "id": "T12",
+      "name": "T12",
+      "x": 640,
+      "y": 140,
+      "kva": 25,
+      "phases": "C",
+      "kind": "transformer"
+    },
+    {
+      "id": "T13",
+      "name": "T13",
+      "x": 800,
+      "y": 280,
+      "kva": 50,
+      "phases": "BC",
+      "kind": "transformer"
+    },
+    {
+      "id": "T14",
+      "name": "T14",
+      "x": 640,
+      "y": 280,
+      "kva": 37.5,
+      "phases": "B",
+      "kind": "transformer"
+    },
+    {
+      "id": "B16",
+      "name": "B16",
+      "x": 960,
+      "y": -140,
+      "kind": "bus"
+    },
+    {
+      "id": "T15",
+      "name": "T15",
+      "x": 1040,
+      "y": -140,
+      "kva": 50,
+      "phases": "A",
+      "kind": "transformer"
+    },
+    {
+      "id": "T16",
+      "name": "T16",
+      "x": 880,
+      "y": -140,
+      "kva": 25,
+      "phases": "A",
+      "kind": "transformer"
+    },
+    {
+      "id": "B17",
+      "name": "B17",
+      "x": 960,
+      "y": 140,
+      "kind": "bus"
+    },
+    {
+      "id": "T17",
+      "name": "T17",
+      "x": 1040,
+      "y": 140,
+      "kva": 25,
+      "phases": "C",
+      "kind": "transformer"
+    },
+    {
+      "id": "T18",
+      "name": "T18",
+      "x": 1200,
+      "y": -120,
+      "kva": 500,
+      "phases": "ABC",
+      "kind": "transformer"
+    },
+    {
+      "id": "B18",
+      "name": "B18",
+      "x": 1200,
+      "y": 140,
+      "kind": "bus"
+    },
+    {
+      "id": "B19",
+      "name": "B19",
+      "x": 1200,
+      "y": 280,
+      "kind": "bus"
+    },
+    {
+      "id": "B20",
+      "name": "B20",
+      "x": 1200,
+      "y": 420,
+      "kind": "bus"
+    },
+    {
+      "id": "T19",
+      "name": "T19",
+      "x": 1280,
+      "y": 140,
+      "kva": 25,
+      "phases": "A",
+      "kind": "transformer"
+    },
+    {
+      "id": "T20",
+      "name": "T20",
+      "x": 1280,
+      "y": 280,
+      "kva": 50,
+      "phases": "A",
+      "kind": "transformer"
+    },
+    {
+      "id": "T21",
+      "name": "T21",
+      "x": 1280,
+      "y": 420,
+      "kva": 25,
+      "phases": "A",
+      "kind": "transformer"
+    },
+    {
+      "id": "T22",
+      "name": "T22",
+      "x": 1120,
+      "y": 420,
+      "kva": 15,
+      "phases": "A",
+      "kind": "transformer"
+    }
+  ],
+  "segments": [
+    {
+      "id": "L1",
+      "node_a": "SRC",
+      "node_b": "B1",
+      "name": "L1",
+      "length_ft": 1500,
+      "conductor": "477 AAC",
+      "phases": "ABC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L2",
+      "node_a": "B1",
+      "node_b": "B2",
+      "name": "L2",
+      "length_ft": 1500,
+      "conductor": "477 AAC",
+      "phases": "ABC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L3",
+      "node_a": "B2",
+      "node_b": "B3",
+      "name": "L3",
+      "length_ft": 1500,
+      "conductor": "477 AAC",
+      "phases": "ABC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L4",
+      "node_a": "B3",
+      "node_b": "B4",
+      "name": "L4",
+      "length_ft": 1500,
+      "conductor": "477 AAC",
+      "phases": "ABC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L5",
+      "node_a": "B4",
+      "node_b": "B5",
+      "name": "L5",
+      "length_ft": 1500,
+      "conductor": "477 AAC",
+      "phases": "ABC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L6",
+      "node_a": "B1",
+      "node_b": "B6",
+      "name": "L6",
+      "length_ft": 1200,
+      "conductor": "#2 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L7",
+      "node_a": "B6",
+      "node_b": "B7",
+      "name": "L7",
+      "length_ft": 1000,
+      "conductor": "#2 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L8",
+      "node_a": "B7",
+      "node_b": "B8",
+      "name": "L8",
+      "length_ft": 800,
+      "conductor": "#4 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L9",
+      "node_a": "B6",
+      "node_b": "T1",
+      "name": "L9",
+      "length_ft": 0,
+      "conductor": "#2 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L10",
+      "node_a": "B6",
+      "node_b": "T2",
+      "name": "L10",
+      "length_ft": 0,
+      "conductor": "#2 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L11",
+      "node_a": "B7",
+      "node_b": "T3",
+      "name": "L11",
+      "length_ft": 0,
+      "conductor": "#2 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L12",
+      "node_a": "B8",
+      "node_b": "T4",
+      "name": "L12",
+      "length_ft": 0,
+      "conductor": "#4 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L13",
+      "node_a": "B7",
+      "node_b": "B9",
+      "name": "L13",
+      "length_ft": 900,
+      "conductor": "#2 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L14",
+      "node_a": "B9",
+      "node_b": "T5",
+      "name": "L14",
+      "length_ft": 0,
+      "conductor": "#2 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L15",
+      "node_a": "B9",
+      "node_b": "T6",
+      "name": "L15",
+      "length_ft": 0,
+      "conductor": "#2 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L16",
+      "node_a": "B2",
+      "node_b": "B10",
+      "name": "L16",
+      "length_ft": 1000,
+      "conductor": "4/0 ACSR",
+      "phases": "ABC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L17",
+      "node_a": "B10",
+      "node_b": "T7",
+      "name": "L17",
+      "length_ft": 0,
+      "conductor": "4/0 ACSR",
+      "phases": "ABC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L18",
+      "node_a": "B10",
+      "node_b": "B11",
+      "name": "L18",
+      "length_ft": 1200,
+      "conductor": "1/0 ACSR",
+      "phases": "ABC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L19",
+      "node_a": "B11",
+      "node_b": "B12",
+      "name": "L19",
+      "length_ft": 900,
+      "conductor": "#2 ACSR",
+      "phases": "B",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L20",
+      "node_a": "B11",
+      "node_b": "B13",
+      "name": "L20",
+      "length_ft": 700,
+      "conductor": "#2 ACSR",
+      "phases": "C",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L21",
+      "node_a": "B12",
+      "node_b": "T8",
+      "name": "L21",
+      "length_ft": 0,
+      "conductor": "#2 ACSR",
+      "phases": "B",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L22",
+      "node_a": "B13",
+      "node_b": "T9",
+      "name": "L22",
+      "length_ft": 0,
+      "conductor": "#2 ACSR",
+      "phases": "C",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L23",
+      "node_a": "B11",
+      "node_b": "T10",
+      "name": "L23",
+      "length_ft": 0,
+      "conductor": "1/0 ACSR",
+      "phases": "ABC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L24",
+      "node_a": "B3",
+      "node_b": "B14",
+      "name": "L24",
+      "length_ft": 1300,
+      "conductor": "#2 ACSR",
+      "phases": "BC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L25",
+      "node_a": "B14",
+      "node_b": "B15",
+      "name": "L25",
+      "length_ft": 1100,
+      "conductor": "#2 ACSR",
+      "phases": "BC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L26",
+      "node_a": "B14",
+      "node_b": "T11",
+      "name": "L26",
+      "length_ft": 0,
+      "conductor": "#2 ACSR",
+      "phases": "B",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L27",
+      "node_a": "B14",
+      "node_b": "T12",
+      "name": "L27",
+      "length_ft": 0,
+      "conductor": "#2 ACSR",
+      "phases": "C",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L28",
+      "node_a": "B15",
+      "node_b": "T13",
+      "name": "L28",
+      "length_ft": 0,
+      "conductor": "#2 ACSR",
+      "phases": "BC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L29",
+      "node_a": "B15",
+      "node_b": "T14",
+      "name": "L29",
+      "length_ft": 0,
+      "conductor": "#2 ACSR",
+      "phases": "B",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L30",
+      "node_a": "B4",
+      "node_b": "B16",
+      "name": "L30",
+      "length_ft": 800,
+      "conductor": "#2 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L31",
+      "node_a": "B16",
+      "node_b": "T15",
+      "name": "L31",
+      "length_ft": 0,
+      "conductor": "#2 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L32",
+      "node_a": "B16",
+      "node_b": "T16",
+      "name": "L32",
+      "length_ft": 0,
+      "conductor": "#2 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L33",
+      "node_a": "B4",
+      "node_b": "B17",
+      "name": "L33",
+      "length_ft": 900,
+      "conductor": "#2 ACSR",
+      "phases": "C",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L34",
+      "node_a": "B17",
+      "node_b": "T17",
+      "name": "L34",
+      "length_ft": 0,
+      "conductor": "#2 ACSR",
+      "phases": "C",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L35",
+      "node_a": "B5",
+      "node_b": "T18",
+      "name": "L35",
+      "length_ft": 0,
+      "conductor": "477 AAC",
+      "phases": "ABC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L36",
+      "node_a": "B5",
+      "node_b": "B18",
+      "name": "L36",
+      "length_ft": 2500,
+      "conductor": "1/0 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L37",
+      "node_a": "B18",
+      "node_b": "B19",
+      "name": "L37",
+      "length_ft": 3000,
+      "conductor": "1/0 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L38",
+      "node_a": "B19",
+      "node_b": "B20",
+      "name": "L38",
+      "length_ft": 2500,
+      "conductor": "#2 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L39",
+      "node_a": "B18",
+      "node_b": "T19",
+      "name": "L39",
+      "length_ft": 0,
+      "conductor": "1/0 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L40",
+      "node_a": "B19",
+      "node_b": "T20",
+      "name": "L40",
+      "length_ft": 0,
+      "conductor": "1/0 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L41",
+      "node_a": "B20",
+      "node_b": "T21",
+      "name": "L41",
+      "length_ft": 0,
+      "conductor": "#2 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L42",
+      "node_a": "B20",
+      "node_b": "T22",
+      "name": "L42",
+      "length_ft": 0,
+      "conductor": "#2 ACSR",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    }
+  ]
+}

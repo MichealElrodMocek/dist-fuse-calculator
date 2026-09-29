@@ -1,0 +1,13 @@
+{
+  "_note": "Sequence impedances are in ohms per mile and depend on pole-top spacing and neutral. They are intentionally left null here: fill them in from Kersting or manufacturer data for the pole configuration you assume. Null values make the placeholder engine fall back to a generic impedance.",
+  "conductors": [
+    {"name": "#4 ACSR",        "description": "Light single-phase tap",          "r1": null, "x1": null, "r0": null, "x0": null, "ampacity_a": null},
+    {"name": "#2 ACSR",        "description": "Single-phase tap",                "r1": null, "x1": null, "r0": null, "x0": null, "ampacity_a": null},
+    {"name": "1/0 ACSR",       "description": "Heavy tap / light three-phase",   "r1": null, "x1": null, "r0": null, "x0": null, "ampacity_a": null},
+    {"name": "4/0 ACSR",       "description": "Three-phase lateral",             "r1": null, "x1": null, "r0": null, "x0": null, "ampacity_a": null},
+    {"name": "336.4 ACSR",     "description": "Three-phase mainline",            "r1": null, "x1": null, "r0": null, "x0": null, "ampacity_a": null},
+    {"name": "477 AAC",        "description": "Heavy three-phase mainline",      "r1": null, "x1": null, "r0": null, "x0": null, "ampacity_a": null},
+    {"name": "795 AAC",        "description": "Feeder getaway / express",        "r1": null, "x1": null, "r0": null, "x0": null, "ampacity_a": null},
+    {"name": "1/0 AL URD",     "description": "Underground primary cable",       "r1": null, "x1": null, "r0": null, "x0": null, "ampacity_a": null}
+  ]
+}

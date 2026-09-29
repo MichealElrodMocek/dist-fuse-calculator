@@ -1,0 +1,8 @@
+# One-step setup (run inside an activated virtual environment):
+#     pip install -r requirements.txt
+PySide6>=6.6
+pytest>=8
+
+# Installs this repo in editable mode so `import fusecalc` and the
+# `fusecalc` command work from anywhere while you edit the source.
+-e .
