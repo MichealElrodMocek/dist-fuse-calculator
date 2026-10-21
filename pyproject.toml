@@ -13,7 +13,7 @@ authors = [
     { name = "Gabriel Chamon" },
     { name = "Micheal Elrod-Mocek" },
 ]
-dependencies = ["PySide6>=6.6"]
+dependencies = ["PySide6>=6.6", "numpy>=1.24"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]

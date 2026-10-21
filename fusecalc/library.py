@@ -1,4 +1,8 @@
-"""Conductor library loaded from ``fusecalc/data/conductors.json``."""
+"""Conductor library loaded from ``fusecalc/data/conductors.json``.
+
+The list order is the conductor index ``fuseSize`` expects; see
+:func:`conductor_index`.
+"""
 
 from __future__ import annotations
 
@@ -14,15 +18,6 @@ DATA_DIR = Path(__file__).parent / "data"
 class Conductor:
     name: str
     description: str = ""
-    r1: float | None = None  # positive-sequence ohms/mile
-    x1: float | None = None
-    r0: float | None = None  # zero-sequence ohms/mile
-    x0: float | None = None
-    ampacity_a: float | None = None
-
-    @property
-    def has_impedance(self) -> bool:
-        return None not in (self.r1, self.x1, self.r0, self.x0)
 
 
 @lru_cache(maxsize=1)
@@ -33,3 +28,14 @@ def conductors() -> dict[str, Conductor]:
 
 def conductor_names() -> list[str]:
     return list(conductors())
+
+
+def conductor_index(name: str) -> int:
+    """Position of ``name`` in the library, i.e. its index in fuseSize's condSize.
+
+    Raises ValueError for a conductor fuseSize has no data for.
+    """
+    names = conductor_names()
+    if name not in names:
+        raise ValueError(f"Conductor {name!r} is not in fuseSize's table ({', '.join(names)})")
+    return names.index(name)

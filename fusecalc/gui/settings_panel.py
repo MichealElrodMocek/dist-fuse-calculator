@@ -18,9 +18,9 @@ from PySide6.QtWidgets import (
 
 from fusecalc.gui import style
 from fusecalc.gui.document import Document
-from fusecalc.model import LINK_TYPES
+from fusecalc.library import conductor_names
+from fusecalc.model import CONDUCTOR_TEMPS_C
 
-PHILOSOPHY_LABELS = {"fuse_saving": "Fuse saving", "fuse_blowing": "Fuse blowing"}
 MAINLINE_LABELS = {"three_phase": "Three-phase backbone", "heaviest_path": "Heaviest-load path"}
 
 
@@ -48,28 +48,36 @@ class StudyPanel(QWidget):
             lambda: self._set(None, "name", self.name.text().strip() or "Untitled feeder"))
         form.addRow("Name", self.name)
         self.kv = _spin(0.1, 69, 2, 0.01, " kV LL")
-        self.i3 = _spin(1, 100_000, 0, 100, " A")
-        self.islg = _spin(1, 100_000, 0, 100, " A")
+        self.mva = _spin(1, 10_000, 1, 10, " MVA")
         self.xr = _spin(0.1, 100, 1, 0.5, "")
-        self.rf = _spin(0, 200, 1, 5, " Ω")
+        self.soil = _spin(1, 10_000, 0, 10, " Ω·m")
+        self.dan = _spin(0.1, 20, 2, 0.25, " ft")
         for label, spin, attr in (("Nominal voltage", self.kv, "nominal_kv_ll"),
-                                  ("Avail. 3Ø fault", self.i3, "fault_3ph_a"),
-                                  ("Avail. SLG fault", self.islg, "fault_slg_a"),
+                                  ("Source fault MVA", self.mva, "source_mva"),
                                   ("Source X/R", self.xr, "x_over_r"),
-                                  ("Min-fault Rf", self.rf, "min_fault_resistance_ohm")):
+                                  ("Soil resistivity", self.soil, "soil_resistivity_ohm_m"),
+                                  ("Phase–neutral", self.dan, "neutral_spacing_ft")):
             spin.valueChanged.connect(lambda v, a=attr: self._set("settings", a, float(v)))
             form.addRow(label, spin)
-        self.philosophy = QComboBox()
-        for key, text in PHILOSOPHY_LABELS.items():
-            self.philosophy.addItem(text, key)
-        self.philosophy.activated.connect(
-            lambda _i: self._set("settings", "philosophy", self.philosophy.currentData()))
-        form.addRow("Philosophy", self.philosophy)
-        self.link = QComboBox()
-        self.link.addItems(LINK_TYPES)
-        self.link.activated.connect(
-            lambda _i: self._set("settings", "preferred_link_type", self.link.currentText()))
-        form.addRow("Default link type", self.link)
+        self.soil.setToolTip("Earth resistivity for the earth-return path")
+        self.dan.setToolTip("Distance from the closest phase conductor to the neutral")
+        self.conductors = {}
+        for label, attr in (("Primary conductor", "primary_conductor"),
+                            ("Neutral conductor", "neutral_conductor")):
+            combo = QComboBox()
+            combo.addItems(conductor_names())
+            combo.activated.connect(
+                lambda _i, a=attr, c=combo: self._set("settings", a, c.currentText()))
+            self.conductors[attr] = combo
+            form.addRow(label, combo)
+        self.conductors["primary_conductor"].setToolTip(
+            "Conductor fuseSize assumes from the source to each fuse")
+        self.temp = QComboBox()
+        for t in CONDUCTOR_TEMPS_C:
+            self.temp.addItem(f"{t} °C", t)
+        self.temp.activated.connect(
+            lambda _i: self._set("settings", "conductor_temp_c", self.temp.currentData()))
+        form.addRow("Conductor temp", self.temp)
         layout.addWidget(feeder_box)
 
         place_box = QGroupBox("Auto-placement rules")
@@ -128,12 +136,13 @@ class StudyPanel(QWidget):
         st, pol = f.settings, f.placement
         self.name.setText(f.name)
         self.kv.setValue(st.nominal_kv_ll)
-        self.i3.setValue(st.fault_3ph_a)
-        self.islg.setValue(st.fault_slg_a)
+        self.mva.setValue(st.source_mva)
         self.xr.setValue(st.x_over_r)
-        self.rf.setValue(st.min_fault_resistance_ohm)
-        self.philosophy.setCurrentIndex(max(0, self.philosophy.findData(st.philosophy)))
-        self.link.setCurrentText(st.preferred_link_type)
+        self.soil.setValue(st.soil_resistivity_ohm_m)
+        self.dan.setValue(st.neutral_spacing_ft)
+        for attr, combo in self.conductors.items():
+            combo.setCurrentText(getattr(st, attr))
+        self.temp.setCurrentIndex(max(0, self.temp.findData(st.conductor_temp_c)))
         self.mainline.setCurrentIndex(max(0, self.mainline.findData(pol.mainline_rule)))
         for attr, box in self.checks.items():
             box.setChecked(getattr(pol, attr))

@@ -1,13 +1,13 @@
-"""Contract between the GUI and the protection engine.
+"""Contract between the GUI and the fuse sizing solver.
 
-The GUI builds a :class:`StudyContext` (feeder + precomputed topology), hands
-it to ``engine.run(ctx)``, and displays the :class:`StudyResults` it returns.
-Nothing in here imports Qt, so an engine can be developed and unit tested on
-its own - see ``tests/test_engine_contract.py``.
+The solver is ``fuseSize`` in :mod:`fusecalc.engine.fuse_sizing`. It sizes the
+first T link of a branch from 16 scalar inputs and returns its rating. The GUI
+works out those inputs for each fuse from the drawing
+(:class:`FuseSizeInputs`, named exactly as ``fuseSize`` names them), calls it,
+and displays the :class:`StudyResults`.
 
-To plug in a real engine, implement a class with a ``name`` attribute and a
-``run(ctx) -> StudyResults`` method, then return it from
-:func:`fusecalc.engine.default_engine`.
+Nothing in here imports Qt, so the solver and this adapter can be tested
+without a display.
 """
 
 from __future__ import annotations
@@ -30,10 +30,9 @@ from fusecalc.topology import (
 
 @dataclass
 class StudyContext:
-    """Everything the engine needs, already worked out from the drawing.
+    """The feeder plus the topology worked out from the drawing.
 
-    * ``tree.upstream[seg_id]`` is the node where that segment's fuse sits,
-      so the fault current "at a fuse" is the fault at that node.
+    * ``tree.upstream[seg_id]`` is the node where that segment's fuse sits.
     * ``loads[seg_id]`` is the connected load downstream of a segment, by phase.
     * ``pairs`` lists each fuse with the nearest fuse upstream of it.
     """
@@ -66,8 +65,38 @@ def build_context(feeder: Feeder) -> StudyContext:
 
 
 @dataclass
+class FuseSizeInputs:
+    """One call to ``fuseSize``: its arguments, names and units unchanged.
+
+    The ``*Choice`` fields are indices into fuseSize's own tables (condSize,
+    condTempVec), not physical values.
+    """
+
+    V_ll: float  # volts, line to line
+    feederLengthFt: float  # feeder primary from the source to the fuse
+    soilResistivity: float  # ohm-meters
+    D_an: float  # feet, closest phase conductor to the neutral
+    S_sc: float  # VA, fault power at the substation transformer
+    x_over_r: float
+    priSizeChoice: int
+    neutSizeChoice: int
+    latPriSizeChoice: int
+    condTempChoice: int
+    latLoadA: float  # kVA downstream of the fuse, per phase
+    latLoadB: float
+    latLoadC: float
+    latLargestXFMR_A: float  # kVA of the largest transformer downstream, per phase
+    latLargestXFMR_B: float
+    latLargestXFMR_C: float
+
+
+@dataclass
 class NodeFault:
-    """Fault currents at a node, in amperes (symmetrical RMS)."""
+    """Fault currents at a node, in amperes (symmetrical RMS).
+
+    fuseSize doesn't return fault currents yet, so the GUI shows these as
+    not available.
+    """
 
     i3ph_a: float  # maximum: bolted three-phase (only meaningful on 3-phase line)
     islg_a: float  # maximum: bolted single-line-to-ground
@@ -80,18 +109,27 @@ class NodeFault:
 
 @dataclass
 class LinkSelection:
-    link_type: str  # "K", "T", "H" or "N"
-    rating_a: float
-    load_a: float  # the design load current the link was sized against
-    ok: bool = True  # False if no standard link satisfies every criterion
+    """The T link for one fuse.
+
+    ``rating_a`` is None when the fuse wasn't sized. That is ``ok`` when
+    fuseSize doesn't cover the fuse (the note says why) and not ``ok`` when
+    fuseSize failed or couldn't be called.
+    """
+
+    rating_a: float | None
+    load_a: float  # peak phase load current downstream of the fuse
+    ok: bool = True  # False if fuseSize warned or failed
     note: str = ""
 
     def label(self) -> str:
-        return f"{self.rating_a:g}{self.link_type}"
+        return "not sized" if self.rating_a is None else f"{self.rating_a:g}T"
 
 
 @dataclass
 class CoordinationResult:
+    """fuseSize checks coordination internally but doesn't return it yet, so
+    every pair comes back ``"not_checked"``."""
+
     protecting_fuse: str  # downstream link, must clear first
     protected_fuse: str  # upstream link, must not be damaged
     fault_current_a: float | None = None  # max fault at the protecting fuse
@@ -109,11 +147,11 @@ class CoordinationResult:
 @dataclass
 class StudyResults:
     engine: str
+    inputs: dict[str, FuseSizeInputs] = field(default_factory=dict)  # by fuse id
     faults: dict[str, NodeFault] = field(default_factory=dict)  # by node id
     links: dict[str, LinkSelection] = field(default_factory=dict)  # by fuse id
     coordination: list[CoordinationResult] = field(default_factory=list)
     messages: list[str] = field(default_factory=list)
-    is_placeholder: bool = False
 
     def coordination_for(self, fuse_id: str) -> CoordinationResult | None:
         """The check of ``fuse_id`` against the fuse upstream of it."""

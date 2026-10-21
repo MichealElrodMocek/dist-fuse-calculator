@@ -3,12 +3,13 @@
   "name": "Long weak tap",
   "settings": {
     "nominal_kv_ll": 12.47,
-    "fault_3ph_a": 3500,
-    "fault_slg_a": 2600,
+    "source_mva": 75.6,
     "x_over_r": 5,
-    "min_fault_resistance_ohm": 20.0,
-    "philosophy": "fuse_saving",
-    "preferred_link_type": "K"
+    "soil_resistivity_ohm_m": 100.0,
+    "neutral_spacing_ft": 4.0,
+    "primary_conductor": "336.4",
+    "neutral_conductor": "4/0",
+    "conductor_temp_c": 75
   },
   "placement": {
     "mainline_rule": "three_phase",
@@ -188,7 +189,7 @@
       "node_b": "B1",
       "name": "L1",
       "length_ft": 5280,
-      "conductor": "336.4 ACSR",
+      "conductor": "336.4",
       "phases": "ABC",
       "fuse": null,
       "fuse_blocked": false
@@ -199,7 +200,7 @@
       "node_b": "B2",
       "name": "L2",
       "length_ft": 4000,
-      "conductor": "336.4 ACSR",
+      "conductor": "336.4",
       "phases": "ABC",
       "fuse": null,
       "fuse_blocked": false
@@ -210,7 +211,7 @@
       "node_b": "T1",
       "name": "L3",
       "length_ft": 0,
-      "conductor": "336.4 ACSR",
+      "conductor": "336.4",
       "phases": "ABC",
       "fuse": null,
       "fuse_blocked": false
@@ -221,7 +222,7 @@
       "node_b": "B3",
       "name": "L4",
       "length_ft": 4000,
-      "conductor": "#4 ACSR",
+      "conductor": "#4",
       "phases": "C",
       "fuse": null,
       "fuse_blocked": false
@@ -232,7 +233,7 @@
       "node_b": "B4",
       "name": "L5",
       "length_ft": 5000,
-      "conductor": "#4 ACSR",
+      "conductor": "#4",
       "phases": "C",
       "fuse": null,
       "fuse_blocked": false
@@ -243,7 +244,7 @@
       "node_b": "B5",
       "name": "L6",
       "length_ft": 6000,
-      "conductor": "#4 ACSR",
+      "conductor": "#4",
       "phases": "C",
       "fuse": null,
       "fuse_blocked": false
@@ -254,7 +255,7 @@
       "node_b": "B6",
       "name": "L7",
       "length_ft": 5000,
-      "conductor": "#4 ACSR",
+      "conductor": "#4",
       "phases": "C",
       "fuse": null,
       "fuse_blocked": false
@@ -265,7 +266,7 @@
       "node_b": "T2",
       "name": "L8",
       "length_ft": 0,
-      "conductor": "#4 ACSR",
+      "conductor": "#4",
       "phases": "C",
       "fuse": null,
       "fuse_blocked": false
@@ -276,7 +277,7 @@
       "node_b": "T3",
       "name": "L9",
       "length_ft": 0,
-      "conductor": "#4 ACSR",
+      "conductor": "#4",
       "phases": "C",
       "fuse": null,
       "fuse_blocked": false
@@ -287,7 +288,7 @@
       "node_b": "T4",
       "name": "L10",
       "length_ft": 0,
-      "conductor": "#4 ACSR",
+      "conductor": "#4",
       "phases": "C",
       "fuse": null,
       "fuse_blocked": false
@@ -298,7 +299,7 @@
       "node_b": "T5",
       "name": "L11",
       "length_ft": 0,
-      "conductor": "#4 ACSR",
+      "conductor": "#4",
       "phases": "C",
       "fuse": null,
       "fuse_blocked": false
@@ -309,7 +310,7 @@
       "node_b": "T6",
       "name": "L12",
       "length_ft": 0,
-      "conductor": "#4 ACSR",
+      "conductor": "#4",
       "phases": "C",
       "fuse": null,
       "fuse_blocked": false
@@ -320,7 +321,7 @@
       "node_b": "B7",
       "name": "L13",
       "length_ft": 3000,
-      "conductor": "#4 ACSR",
+      "conductor": "#4",
       "phases": "C",
       "fuse": null,
       "fuse_blocked": false
@@ -331,7 +332,7 @@
       "node_b": "T7",
       "name": "L14",
       "length_ft": 0,
-      "conductor": "#4 ACSR",
+      "conductor": "#4",
       "phases": "C",
       "fuse": null,
       "fuse_blocked": false
@@ -342,7 +343,7 @@
       "node_b": "B8",
       "name": "L15",
       "length_ft": 3000,
-      "conductor": "#2 ACSR",
+      "conductor": "#2",
       "phases": "AB",
       "fuse": null,
       "fuse_blocked": false
@@ -353,7 +354,7 @@
       "node_b": "B9",
       "name": "L16",
       "length_ft": 4000,
-      "conductor": "#2 ACSR",
+      "conductor": "#2",
       "phases": "AB",
       "fuse": null,
       "fuse_blocked": false
@@ -364,7 +365,7 @@
       "node_b": "T8",
       "name": "L17",
       "length_ft": 0,
-      "conductor": "#2 ACSR",
+      "conductor": "#2",
       "phases": "AB",
       "fuse": null,
       "fuse_blocked": false
@@ -375,7 +376,7 @@
       "node_b": "T9",
       "name": "L18",
       "length_ft": 0,
-      "conductor": "#2 ACSR",
+      "conductor": "#2",
       "phases": "A",
       "fuse": null,
       "fuse_blocked": false
@@ -386,7 +387,7 @@
       "node_b": "T10",
       "name": "L19",
       "length_ft": 0,
-      "conductor": "#2 ACSR",
+      "conductor": "#2",
       "phases": "B",
       "fuse": null,
       "fuse_blocked": false

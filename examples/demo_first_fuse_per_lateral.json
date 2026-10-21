@@ -1,0 +1,630 @@
+{
+  "schema": 1,
+  "name": "Demo: one fuse per lateral",
+  "settings": {
+    "nominal_kv_ll": 12.47,
+    "source_mva": 50.0,
+    "x_over_r": 10.0,
+    "soil_resistivity_ohm_m": 100.0,
+    "neutral_spacing_ft": 4.0,
+    "primary_conductor": "336.4",
+    "neutral_conductor": "4/0",
+    "conductor_temp_c": 75
+  },
+  "placement": {
+    "mainline_rule": "heaviest_path",
+    "fuse_transformers": true,
+    "fuse_laterals": true,
+    "fuse_sublaterals": true,
+    "sectionalize_long_laterals": true,
+    "sectionalize_length_ft": 5280.0,
+    "max_fuses_in_series": 2
+  },
+  "nodes": [
+    {
+      "id": "SRC",
+      "name": "Substation",
+      "x": 0.0,
+      "y": 0.0,
+      "kind": "source"
+    },
+    {
+      "id": "B1",
+      "name": "B1",
+      "x": 240,
+      "y": 0,
+      "kind": "bus"
+    },
+    {
+      "id": "B2",
+      "name": "B2",
+      "x": 480,
+      "y": 0,
+      "kind": "bus"
+    },
+    {
+      "id": "B3",
+      "name": "B3",
+      "x": 720,
+      "y": 0,
+      "kind": "bus"
+    },
+    {
+      "id": "B4",
+      "name": "B4",
+      "x": 960,
+      "y": 0,
+      "kind": "bus"
+    },
+    {
+      "id": "B13",
+      "name": "B13",
+      "x": 1200,
+      "y": 0,
+      "kind": "bus"
+    },
+    {
+      "id": "B5",
+      "name": "B5",
+      "x": 240,
+      "y": 160,
+      "kind": "bus"
+    },
+    {
+      "id": "B6",
+      "name": "B6",
+      "x": 240,
+      "y": 320,
+      "kind": "bus"
+    },
+    {
+      "id": "T1",
+      "name": "T1",
+      "x": 320,
+      "y": 160,
+      "kva": 150,
+      "phases": "ABC",
+      "kind": "transformer"
+    },
+    {
+      "id": "T2",
+      "name": "T2",
+      "x": 320,
+      "y": 320,
+      "kva": 50,
+      "phases": "A",
+      "kind": "transformer"
+    },
+    {
+      "id": "T3",
+      "name": "T3",
+      "x": 240,
+      "y": 440,
+      "kva": 50,
+      "phases": "B",
+      "kind": "transformer"
+    },
+    {
+      "id": "B7",
+      "name": "B7",
+      "x": 480,
+      "y": 160,
+      "kind": "bus"
+    },
+    {
+      "id": "B8",
+      "name": "B8",
+      "x": 480,
+      "y": 320,
+      "kind": "bus"
+    },
+    {
+      "id": "T4",
+      "name": "T4",
+      "x": 560,
+      "y": 160,
+      "kva": 25,
+      "phases": "A",
+      "kind": "transformer"
+    },
+    {
+      "id": "T5",
+      "name": "T5",
+      "x": 560,
+      "y": 320,
+      "kva": 50,
+      "phases": "A",
+      "kind": "transformer"
+    },
+    {
+      "id": "T6",
+      "name": "T6",
+      "x": 480,
+      "y": 440,
+      "kva": 25,
+      "phases": "A",
+      "kind": "transformer"
+    },
+    {
+      "id": "B9",
+      "name": "B9",
+      "x": 720,
+      "y": 160,
+      "kind": "bus"
+    },
+    {
+      "id": "B10",
+      "name": "B10",
+      "x": 720,
+      "y": 320,
+      "kind": "bus"
+    },
+    {
+      "id": "T7",
+      "name": "T7",
+      "x": 800,
+      "y": 160,
+      "kva": 37.5,
+      "phases": "B",
+      "kind": "transformer"
+    },
+    {
+      "id": "T8",
+      "name": "T8",
+      "x": 800,
+      "y": 320,
+      "kva": 25,
+      "phases": "B",
+      "kind": "transformer"
+    },
+    {
+      "id": "T9",
+      "name": "T9",
+      "x": 720,
+      "y": 440,
+      "kva": 75,
+      "phases": "B",
+      "kind": "transformer"
+    },
+    {
+      "id": "B11",
+      "name": "B11",
+      "x": 960,
+      "y": 160,
+      "kind": "bus"
+    },
+    {
+      "id": "B12",
+      "name": "B12",
+      "x": 960,
+      "y": 320,
+      "kind": "bus"
+    },
+    {
+      "id": "T10",
+      "name": "T10",
+      "x": 1040,
+      "y": 160,
+      "kva": 15,
+      "phases": "C",
+      "kind": "transformer"
+    },
+    {
+      "id": "T11",
+      "name": "T11",
+      "x": 1040,
+      "y": 320,
+      "kva": 25,
+      "phases": "C",
+      "kind": "transformer"
+    },
+    {
+      "id": "T12",
+      "name": "T12",
+      "x": 960,
+      "y": 440,
+      "kva": 25,
+      "phases": "C",
+      "kind": "transformer"
+    },
+    {
+      "id": "T13",
+      "name": "T13",
+      "x": 1300,
+      "y": 0,
+      "kva": 300,
+      "phases": "ABC",
+      "kind": "transformer"
+    }
+  ],
+  "segments": [
+    {
+      "id": "L1",
+      "node_a": "SRC",
+      "node_b": "B1",
+      "name": "L1",
+      "length_ft": 3000,
+      "conductor": "336.4",
+      "phases": "ABC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L2",
+      "node_a": "B1",
+      "node_b": "B2",
+      "name": "L2",
+      "length_ft": 4000,
+      "conductor": "336.4",
+      "phases": "ABC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L3",
+      "node_a": "B2",
+      "node_b": "B3",
+      "name": "L3",
+      "length_ft": 5000,
+      "conductor": "336.4",
+      "phases": "ABC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L4",
+      "node_a": "B3",
+      "node_b": "B4",
+      "name": "L4",
+      "length_ft": 6000,
+      "conductor": "336.4",
+      "phases": "ABC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L5",
+      "node_a": "B4",
+      "node_b": "B13",
+      "name": "L5",
+      "length_ft": 2000,
+      "conductor": "336.4",
+      "phases": "ABC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L6",
+      "node_a": "B1",
+      "node_b": "B5",
+      "name": "L6",
+      "length_ft": 1500,
+      "conductor": "1/0",
+      "phases": "ABC",
+      "fuse": {
+        "id": "F1",
+        "name": "F1",
+        "rating_a": null,
+        "origin": "auto",
+        "reason": "ABC lateral tapped off the mainline at B1"
+      },
+      "fuse_blocked": false
+    },
+    {
+      "id": "L7",
+      "node_a": "B5",
+      "node_b": "B6",
+      "name": "L7",
+      "length_ft": 1500,
+      "conductor": "1/0",
+      "phases": "ABC",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L8",
+      "node_a": "B5",
+      "node_b": "T1",
+      "name": "L8",
+      "length_ft": 0,
+      "conductor": "1/0",
+      "phases": "ABC",
+      "fuse": {
+        "id": "F5",
+        "name": "F5",
+        "rating_a": 10.0,
+        "origin": "manual",
+        "reason": "Primary cutout for T1 (150 kVA ABC)"
+      },
+      "fuse_blocked": false
+    },
+    {
+      "id": "L9",
+      "node_a": "B6",
+      "node_b": "T2",
+      "name": "L9",
+      "length_ft": 0,
+      "conductor": "1/0",
+      "phases": "A",
+      "fuse": {
+        "id": "F6",
+        "name": "F6",
+        "rating_a": 10.0,
+        "origin": "manual",
+        "reason": "Primary cutout for T2 (50 kVA A)"
+      },
+      "fuse_blocked": false
+    },
+    {
+      "id": "L10",
+      "node_a": "B6",
+      "node_b": "T3",
+      "name": "L10",
+      "length_ft": 0,
+      "conductor": "1/0",
+      "phases": "B",
+      "fuse": {
+        "id": "F7",
+        "name": "F7",
+        "rating_a": 10.0,
+        "origin": "manual",
+        "reason": "Primary cutout for T3 (50 kVA B)"
+      },
+      "fuse_blocked": false
+    },
+    {
+      "id": "L11",
+      "node_a": "B2",
+      "node_b": "B7",
+      "name": "L11",
+      "length_ft": 2000,
+      "conductor": "#2",
+      "phases": "A",
+      "fuse": {
+        "id": "F2",
+        "name": "F2",
+        "rating_a": null,
+        "origin": "auto",
+        "reason": "A lateral tapped off the mainline at B2"
+      },
+      "fuse_blocked": false
+    },
+    {
+      "id": "L12",
+      "node_a": "B7",
+      "node_b": "B8",
+      "name": "L12",
+      "length_ft": 2000,
+      "conductor": "#2",
+      "phases": "A",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L13",
+      "node_a": "B7",
+      "node_b": "T4",
+      "name": "L13",
+      "length_ft": 0,
+      "conductor": "#2",
+      "phases": "A",
+      "fuse": {
+        "id": "F8",
+        "name": "F8",
+        "rating_a": 6.0,
+        "origin": "manual",
+        "reason": "Primary cutout for T4 (25 kVA A)"
+      },
+      "fuse_blocked": false
+    },
+    {
+      "id": "L14",
+      "node_a": "B8",
+      "node_b": "T5",
+      "name": "L14",
+      "length_ft": 0,
+      "conductor": "#2",
+      "phases": "A",
+      "fuse": {
+        "id": "F9",
+        "name": "F9",
+        "rating_a": 10.0,
+        "origin": "manual",
+        "reason": "Primary cutout for T5 (50 kVA A)"
+      },
+      "fuse_blocked": false
+    },
+    {
+      "id": "L15",
+      "node_a": "B8",
+      "node_b": "T6",
+      "name": "L15",
+      "length_ft": 0,
+      "conductor": "#2",
+      "phases": "A",
+      "fuse": {
+        "id": "F10",
+        "name": "F10",
+        "rating_a": 6.0,
+        "origin": "manual",
+        "reason": "Primary cutout for T6 (25 kVA A)"
+      },
+      "fuse_blocked": false
+    },
+    {
+      "id": "L16",
+      "node_a": "B3",
+      "node_b": "B9",
+      "name": "L16",
+      "length_ft": 2000,
+      "conductor": "#2",
+      "phases": "B",
+      "fuse": {
+        "id": "F3",
+        "name": "F3",
+        "rating_a": null,
+        "origin": "auto",
+        "reason": "B lateral tapped off the mainline at B3"
+      },
+      "fuse_blocked": false
+    },
+    {
+      "id": "L17",
+      "node_a": "B9",
+      "node_b": "B10",
+      "name": "L17",
+      "length_ft": 2500,
+      "conductor": "#2",
+      "phases": "B",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L18",
+      "node_a": "B9",
+      "node_b": "T7",
+      "name": "L18",
+      "length_ft": 0,
+      "conductor": "#2",
+      "phases": "B",
+      "fuse": {
+        "id": "F11",
+        "name": "F11",
+        "rating_a": 8.0,
+        "origin": "manual",
+        "reason": "Primary cutout for T7 (37.5 kVA B)"
+      },
+      "fuse_blocked": false
+    },
+    {
+      "id": "L19",
+      "node_a": "B10",
+      "node_b": "T8",
+      "name": "L19",
+      "length_ft": 0,
+      "conductor": "#2",
+      "phases": "B",
+      "fuse": {
+        "id": "F12",
+        "name": "F12",
+        "rating_a": 6.0,
+        "origin": "manual",
+        "reason": "Primary cutout for T8 (25 kVA B)"
+      },
+      "fuse_blocked": false
+    },
+    {
+      "id": "L20",
+      "node_a": "B10",
+      "node_b": "T9",
+      "name": "L20",
+      "length_ft": 0,
+      "conductor": "#2",
+      "phases": "B",
+      "fuse": {
+        "id": "F13",
+        "name": "F13",
+        "rating_a": 15.0,
+        "origin": "manual",
+        "reason": "Primary cutout for T9 (75 kVA B)"
+      },
+      "fuse_blocked": false
+    },
+    {
+      "id": "L21",
+      "node_a": "B4",
+      "node_b": "B11",
+      "name": "L21",
+      "length_ft": 2000,
+      "conductor": "#4",
+      "phases": "C",
+      "fuse": {
+        "id": "F4",
+        "name": "F4",
+        "rating_a": null,
+        "origin": "auto",
+        "reason": "C lateral tapped off the mainline at B4"
+      },
+      "fuse_blocked": false
+    },
+    {
+      "id": "L22",
+      "node_a": "B11",
+      "node_b": "B12",
+      "name": "L22",
+      "length_ft": 2500,
+      "conductor": "#4",
+      "phases": "C",
+      "fuse": null,
+      "fuse_blocked": false
+    },
+    {
+      "id": "L23",
+      "node_a": "B11",
+      "node_b": "T10",
+      "name": "L23",
+      "length_ft": 0,
+      "conductor": "#4",
+      "phases": "C",
+      "fuse": {
+        "id": "F14",
+        "name": "F14",
+        "rating_a": 3.0,
+        "origin": "manual",
+        "reason": "Primary cutout for T10 (15 kVA C)"
+      },
+      "fuse_blocked": false
+    },
+    {
+      "id": "L24",
+      "node_a": "B12",
+      "node_b": "T11",
+      "name": "L24",
+      "length_ft": 0,
+      "conductor": "#4",
+      "phases": "C",
+      "fuse": {
+        "id": "F15",
+        "name": "F15",
+        "rating_a": 6.0,
+        "origin": "manual",
+        "reason": "Primary cutout for T11 (25 kVA C)"
+      },
+      "fuse_blocked": false
+    },
+    {
+      "id": "L25",
+      "node_a": "B12",
+      "node_b": "T12",
+      "name": "L25",
+      "length_ft": 0,
+      "conductor": "#4",
+      "phases": "C",
+      "fuse": {
+        "id": "F16",
+        "name": "F16",
+        "rating_a": 6.0,
+        "origin": "manual",
+        "reason": "Primary cutout for T12 (25 kVA C)"
+      },
+      "fuse_blocked": false
+    },
+    {
+      "id": "L26",
+      "node_a": "B13",
+      "node_b": "T13",
+      "name": "L26",
+      "length_ft": 0,
+      "conductor": "336.4",
+      "phases": "ABC",
+      "fuse": {
+        "id": "F17",
+        "name": "F17",
+        "rating_a": 20.0,
+        "origin": "manual",
+        "reason": "Primary cutout for T13 (300 kVA ABC)"
+      },
+      "fuse_blocked": false
+    }
+  ]
+}

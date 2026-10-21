@@ -17,7 +17,7 @@ from fusecalc.model import Bus, Feeder, Segment, Source, Transformer, phases_sub
 from fusecalc.topology import supply_phases, transformer_load
 
 DEFAULT_LINE_FT = 500.0
-DEFAULT_CONDUCTOR = "336.4 ACSR"
+DEFAULT_CONDUCTOR = "336.4"
 
 
 class Tool(str, Enum):

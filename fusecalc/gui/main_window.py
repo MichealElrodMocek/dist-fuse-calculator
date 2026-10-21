@@ -32,8 +32,8 @@ FILE_FILTER = "Feeder files (*.json);;All files (*)"
 GUIDE = """
 <h3>Drawing a feeder</h3>
 <ol>
-<li>A new feeder starts with the <b>source</b> (substation). Set its voltage and available
-fault current in the <b>Study</b> panel.</li>
+<li>A new feeder starts with the <b>source</b> (substation). Set its voltage, fault MVA
+and the feeder conductors in the <b>Study</b> panel.</li>
 <li>Pick the <b>Line</b> tool (L), click the source, then click empty space to drop buses
 along the mainline. Click an existing node to connect to it. Esc stops.</li>
 <li>Select a bus and use the <b>Transformer</b> tool (T): each click places a transformer
@@ -49,8 +49,9 @@ Checks tab flags violations.</p>
 <p><b>Auto-place fuses</b> proposes transformer, lateral, sub-lateral and sectionalizing
 fuses following the rules in the Study panel. Use the <b>Fuse</b> tool (F) to add or remove
 fuses by hand; hand-placed or edited fuses are never removed by auto-placement.</p>
-<p><b>Run study</b> (F5) sends the feeder to the protection engine for fault currents, link
-selection and coordination checks.</p>
+<p><b>Run study</b> (F5) sizes the T link for the first fuse of each branch with
+<code>fuseSize</code>. Fuses below another fuse aren't sized yet; give transformer cutouts a
+rating in Properties.</p>
 """
 
 

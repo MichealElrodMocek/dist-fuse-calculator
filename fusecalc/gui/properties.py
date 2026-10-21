@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import asdict
 from typing import Callable
 
 from PySide6.QtCore import Qt
@@ -24,7 +25,6 @@ from fusecalc.gui.document import Document
 from fusecalc.gui.scene import OneLineScene
 from fusecalc.library import conductor_names
 from fusecalc.model import (
-    LINK_TYPES,
     PHASE_CHOICES,
     TRANSFORMER_KVA_1PH,
     TRANSFORMER_KVA_3PH,
@@ -36,7 +36,7 @@ from fusecalc.model import (
 )
 from fusecalc.topology import supply_phases, transformer_load
 
-FUSE_RATINGS = (1, 2, 3, 5, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50, 65, 80, 100, 140, 200)
+FUSE_RATINGS = (1, 2, 3, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50, 65, 80, 100, 140, 200)  # T links
 AUTO = "Auto"
 
 
@@ -225,13 +225,11 @@ class PropertiesPanel(QWidget):
         self.form.addRow("Length", length)
 
         cond = QComboBox()
-        cond.setEditable(True)
-        cond.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
         cond.addItems(conductor_names())
+        if seg.conductor not in conductor_names():  # e.g. from an older file
+            cond.insertItem(0, seg.conductor)
         cond.setCurrentText(seg.conductor)
-        cond.activated.connect(lambda _i: set_attr("conductor", cond.currentText().strip()))
-        cond.lineEdit().editingFinished.connect(
-            lambda: set_attr("conductor", cond.currentText().strip()))
+        cond.activated.connect(lambda _i: set_attr("conductor", cond.currentText()))
         self.form.addRow("Conductor", cond)
 
         has_fuse = QCheckBox("Fuse at upstream end")
@@ -258,14 +256,7 @@ class PropertiesPanel(QWidget):
                     target.origin = "manual"  # user-edited fuses survive auto-placement
                 self._apply(change)
 
-        ltype = QComboBox()
-        ltype.addItems([AUTO, *LINK_TYPES])
-        ltype.setCurrentText(fuse.link_type or AUTO)
-        ltype.activated.connect(
-            lambda _i: set_attr("link_type", None if ltype.currentText() == AUTO
-                                else ltype.currentText()))
-        self.form.addRow("Link type", ltype)
-        self.form.addRow("Rating (A)", self._number_combo(
+        self.form.addRow("T link (A)", self._number_combo(
             FUSE_RATINGS, fuse.rating_a, lambda v: set_attr("rating_a", v), allow_auto=True))
 
         origin = QLabel("Placed by auto-placement" if fuse.origin == "auto" else "Placed by you")
@@ -297,6 +288,9 @@ class PropertiesPanel(QWidget):
                     f"Max SLG fault: <b>{style.fmt_amps(fault.islg_a)}</b>",
                     f"Min fault: <b>{style.fmt_amps(fault.imin_a)}</b>",
                 ])
+            elif res:
+                rows.append("<span style='color:#9e9e9e'>Fault current: not available "
+                            "(fuseSize doesn't return it yet)</span>")
 
         if isinstance(element, Fuse):
             seg = f.fuse_segment(element.id)
@@ -317,6 +311,10 @@ class PropertiesPanel(QWidget):
             if link:
                 colour = "" if link.ok else " style='color:#c62828'"
                 rows.append(f"<span{colour}>Selected link: <b>{link.label()}</b> - {link.note}</span>")
+            inputs = res.inputs.get(element.id) if res else None
+            if inputs:
+                rows.append("fuseSize inputs:<br><span style='font-family:monospace'>" + "<br>".join(
+                    f"{k} = {v:g}" for k, v in asdict(inputs).items()) + "</span>")
             coord = res.coordination_for(element.id) if res else None
             if coord:
                 margin = "-" if coord.margin_a is None else style.fmt_amps(coord.margin_a)
@@ -355,6 +353,4 @@ class PropertiesPanel(QWidget):
                 rows.append(f"Full-load current: {max(load.amps.values()):.1f} A per phase")
             fault_rows(element.id)
 
-        if res is not None and res.is_placeholder:
-            rows.append("<span style='color:#9e9e9e'>Values from the placeholder engine.</span>")
         self.info.setText("<br><br>".join(rows))

@@ -244,8 +244,8 @@ def validate(feeder: Feeder, tree: RadialTree | None = None) -> list[Issue]:
 
     if st.nominal_kv_ll <= 0:
         issues.append(Issue("error", "Nominal voltage must be positive."))
-    if st.fault_3ph_a <= 0 or st.fault_slg_a <= 0:
-        issues.append(Issue("error", "Available fault currents must be positive."))
+    if st.source_mva <= 0 or st.x_over_r <= 0:
+        issues.append(Issue("error", "Source fault MVA and X/R must be positive."))
 
     for seg_id in tree.loop_segments:
         issues.append(Issue("error", "Segment closes a loop; the feeder must be radial.", seg_id))

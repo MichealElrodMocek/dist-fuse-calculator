@@ -28,9 +28,9 @@ SCHEMA_VERSION = 1
 
 PHASE_ORDER = "ABC"
 PHASE_CHOICES = ("ABC", "AB", "BC", "AC", "A", "B", "C")
-LINK_TYPES = ("K", "T", "H", "N")
 MAINLINE_RULES = ("three_phase", "heaviest_path")
-PHILOSOPHIES = ("fuse_saving", "fuse_blowing")
+# Must match condTempVec in fuse_sizing.fuseSize, which takes the index.
+CONDUCTOR_TEMPS_C = (25, 50, 75)
 
 # Common overhead pole-mount sizes; the GUI offers these but accepts any value.
 TRANSFORMER_KVA_1PH = (10, 15, 25, 37.5, 50, 75, 100, 167)
@@ -116,14 +116,14 @@ NODE_TYPES: dict[str, type[Node]] = {cls.kind: cls for cls in (Source, Bus, Tran
 class Fuse:
     """A fuse cutout at the upstream end of a segment.
 
-    ``link_type`` / ``rating_a`` of ``None`` mean "let the sizing engine pick".
+    Every link is an EEI-NEMA T link. ``rating_a`` of ``None`` means "let the
+    sizing engine pick"; a number fixes the rating.
     ``origin`` is ``"manual"`` for fuses the user placed and ``"auto"`` for
     ones the placement rules added (those are replaced on the next auto-place).
     """
 
     id: str
     name: str = ""
-    link_type: str | None = None
     rating_a: float | None = None
     origin: str = "manual"
     reason: str = ""
@@ -163,15 +163,20 @@ class Segment:
 
 @dataclass(kw_only=True)
 class StudySettings:
-    """Feeder-level inputs for the fault study and link selection."""
+    """Feeder-level inputs to ``fuseSize`` (``fusecalc/engine/fuse_sizing.py``).
 
-    nominal_kv_ll: float = 12.47
-    fault_3ph_a: float = 8000.0  # available bolted 3-phase fault at the source
-    fault_slg_a: float = 7000.0  # available bolted single-line-to-ground fault
-    x_over_r: float = 10.0
-    min_fault_resistance_ohm: float = 20.0  # used for minimum-fault currents
-    philosophy: str = "fuse_saving"
-    preferred_link_type: str = "K"
+    Each comment names the ``fuseSize`` argument the field feeds. Defaults are
+    the example inputs at the top of that file.
+    """
+
+    nominal_kv_ll: float = 12.47  # V_ll (sent in volts)
+    source_mva: float = 500.0  # S_sc: fault power at the substation transformer (sent in VA)
+    x_over_r: float = 10.0  # x_over_r: substation transformer X/R
+    soil_resistivity_ohm_m: float = 100.0  # soilResistivity
+    neutral_spacing_ft: float = 4.0  # D_an: closest phase conductor to the neutral
+    primary_conductor: str = "1/0"  # priSizeChoice: feeder primary, source to fuse
+    neutral_conductor: str = "1/0"  # neutSizeChoice
+    conductor_temp_c: int = 75  # condTempChoice
 
 
 @dataclass(kw_only=True)

@@ -1,11 +1,12 @@
-"""Protection engine: fault study, link selection, coordination checks.
+"""Fuse sizing: the GUI's bridge to ``fuseSize`` (fuse_sizing.py).
 
-The GUI only talks to :func:`default_engine`. Point it at the real
-implementation once it exists; everything else keeps working.
+The GUI only talks to :func:`default_engine`.
 """
 
+from fusecalc.engine.adapter import FuseSizeEngine, fuse_size_inputs
 from fusecalc.engine.api import (
     CoordinationResult,
+    FuseSizeInputs,
     LinkSelection,
     NodeFault,
     ProtectionEngine,
@@ -13,22 +14,23 @@ from fusecalc.engine.api import (
     StudyResults,
     build_context,
 )
-from fusecalc.engine.placeholder import PlaceholderEngine
 
 
 def default_engine() -> ProtectionEngine:
-    """The engine the GUI runs. Swap the placeholder for the real one here."""
-    return PlaceholderEngine()
+    """The engine the GUI runs."""
+    return FuseSizeEngine()
 
 
 __all__ = [
     "CoordinationResult",
+    "FuseSizeEngine",
+    "FuseSizeInputs",
     "LinkSelection",
     "NodeFault",
-    "PlaceholderEngine",
     "ProtectionEngine",
     "StudyContext",
     "StudyResults",
     "build_context",
     "default_engine",
+    "fuse_size_inputs",
 ]

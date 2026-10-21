@@ -155,7 +155,7 @@ class NodeItem(QGraphicsItem):
 
         if isinstance(node, Source):
             st = feeder.settings
-            text = f"{node.label()}\n{st.nominal_kv_ll:g} kV  ·  {st.fault_3ph_a / 1000:.1f} kA 3Ø"
+            text = f"{node.label()}\n{st.nominal_kv_ll:g} kV  ·  {st.source_mva:g} MVA"
             self.label.set_text(text)
             self.label.place(QPointF(), self.away, self.radius + 5)
         elif isinstance(node, Transformer):
@@ -356,7 +356,7 @@ class FuseItem(QGraphicsItem):
             if link is not None and not link.ok:
                 self.status = "fail"
         elif fuse.rating_a:
-            text += f"  {fuse.rating_a:g}{fuse.link_type or ''}"
+            text += f"  {fuse.rating_a:g}T"
         self.label.set_text(text, style.STATUS_COLORS[self.status]
                             if self.status in ("fail", "pass") else style.INK)
         if side is not None:

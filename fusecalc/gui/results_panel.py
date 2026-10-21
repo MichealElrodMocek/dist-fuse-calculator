@@ -130,12 +130,7 @@ class ResultsPanel(QWidget):
         elif doc.results_stale:
             self.banner.setText("<b>Results are out of date.</b> Press Run Study (F5).")
         elif doc.results is not None:
-            res = doc.results
-            text = f"Engine: <b>{res.engine}</b>"
-            if res.is_placeholder:
-                text += ("  <span style='color:#ef6c00'>- placeholder numbers, not for "
-                         "engineering use</span>")
-            self.banner.setText(text)
+            self.banner.setText(f"Engine: <b>{doc.results.engine}</b>")
         else:
             self.banner.setText("No study results yet.")
 
