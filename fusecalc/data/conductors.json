@@ -1,5 +1,6 @@
 {
-  "_note": "Order must match condSize in fusecalc/engine/fuse_sizing.py: fuseSize takes a conductor's position in this list (priSizeChoice, neutSizeChoice, latPriSizeChoice), not its name. Impedance and ampacity tables live in fuseSize.",
+  "_note": "Order must match condSize in fusecalc/engine/fuse_sizing.py: fuseSize takes a conductor's position in this list (priSizeChoice, neutSizeChoice, latPriSizeChoice), not its name. Impedance and ampacity tables live in fuse_sizing.py. 'types' must match condType there (the *TypeChoice index).",
+  "types": ["ACSR", "AAAC", "AAC"],
   "conductors": [
     {"name": "#4",    "description": "Light single-phase tap"},
     {"name": "#2",    "description": "Single-phase tap"},

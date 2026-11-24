@@ -29,7 +29,7 @@ SCHEMA_VERSION = 1
 PHASE_ORDER = "ABC"
 PHASE_CHOICES = ("ABC", "AB", "BC", "AC", "A", "B", "C")
 MAINLINE_RULES = ("three_phase", "heaviest_path")
-# Must match condTempVec in fuse_sizing.fuseSize, which takes the index.
+# Must match condTempVec in fuse_sizing.py, which takes the index.
 CONDUCTOR_TEMPS_C = (25, 50, 75)
 
 # Common overhead pole-mount sizes; the GUI offers these but accepts any value.
@@ -140,6 +140,7 @@ class Segment:
     name: str = ""
     length_ft: float = 0.0
     conductor: str = ""
+    conductor_type: str = "ACSR"  # material: latPriTypeChoice
     phases: str = "ABC"
     fuse: Fuse | None = None
     fuse_blocked: bool = False  # user says "never put a fuse here"
@@ -163,10 +164,10 @@ class Segment:
 
 @dataclass(kw_only=True)
 class StudySettings:
-    """Feeder-level inputs to ``fuseSize`` (``fusecalc/engine/fuse_sizing.py``).
+    """Feeder-level inputs to ``fusecalc/engine/fuse_sizing.py``.
 
-    Each comment names the ``fuseSize`` argument the field feeds. Defaults are
-    the example inputs at the top of that file.
+    Each comment names the argument the field feeds (feederTapCurrent and
+    latFuseCurrent). Defaults are the example inputs at the top of that file.
     """
 
     nominal_kv_ll: float = 12.47  # V_ll (sent in volts)
@@ -174,8 +175,10 @@ class StudySettings:
     x_over_r: float = 10.0  # x_over_r: substation transformer X/R
     soil_resistivity_ohm_m: float = 100.0  # soilResistivity
     neutral_spacing_ft: float = 4.0  # D_an: closest phase conductor to the neutral
-    primary_conductor: str = "1/0"  # priSizeChoice: feeder primary, source to fuse
-    neutral_conductor: str = "1/0"  # neutSizeChoice
+    primary_conductor: str = "1/0"  # priSizeChoice: feeder primary, source to first fuse
+    primary_conductor_type: str = "ACSR"  # priTypeChoice
+    neutral_conductor: str = "1/0"  # neutSizeChoice, and latNeutSizeChoice on laterals
+    neutral_conductor_type: str = "ACSR"  # neutTypeChoice, and latNeutTypeChoice
     conductor_temp_c: int = 75  # condTempChoice
 
 

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import cmath
+import math
 from dataclasses import asdict
 from typing import Callable
 
@@ -23,7 +25,7 @@ from PySide6.QtWidgets import (
 from fusecalc.gui import style
 from fusecalc.gui.document import Document
 from fusecalc.gui.scene import OneLineScene
-from fusecalc.library import conductor_names
+from fusecalc.library import conductor_names, conductor_types
 from fusecalc.model import (
     PHASE_CHOICES,
     TRANSFORMER_KVA_1PH,
@@ -35,6 +37,19 @@ from fusecalc.model import (
     Transformer,
 )
 from fusecalc.topology import supply_phases, transformer_load
+
+def _call_html(inputs) -> str:
+    """One solver call's arguments, e.g. for FuseSizeInputs 'fuseSize(...)'."""
+    func = {"FeederTapInputs": "feederTapCurrent", "LatFuseInputs": "latFuseCurrent",
+            "FuseSizeInputs": "fuseSize", "XfmrFuseInputs": "xfmrFuseSize"}[type(inputs).__name__]
+
+    def fmt(v) -> str:
+        if isinstance(v, complex):
+            return f"{abs(v):.1f} A ∠{math.degrees(cmath.phase(v)):.1f}°"
+        return f"{v:g}"
+    return (f"{func} inputs:<br><span style='font-family:monospace'>" + "<br>".join(
+        f"{k} = {fmt(v)}" for k, v in asdict(inputs).items()) + "</span>")
+
 
 FUSE_RATINGS = (1, 2, 3, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50, 65, 80, 100, 140, 200)  # T links
 AUTO = "Auto"
@@ -232,6 +247,14 @@ class PropertiesPanel(QWidget):
         cond.activated.connect(lambda _i: set_attr("conductor", cond.currentText()))
         self.form.addRow("Conductor", cond)
 
+        material = QComboBox()
+        material.addItems(conductor_types())
+        if seg.conductor_type not in conductor_types():
+            material.insertItem(0, seg.conductor_type)
+        material.setCurrentText(seg.conductor_type)
+        material.activated.connect(lambda _i: set_attr("conductor_type", material.currentText()))
+        self.form.addRow("Material", material)
+
         has_fuse = QCheckBox("Fuse at upstream end")
         has_fuse.setChecked(seg.fuse is not None)
         has_fuse.toggled.connect(lambda _on: self.scene.toggle_fuse(sid))
@@ -283,14 +306,13 @@ class PropertiesPanel(QWidget):
         def fault_rows(node_id: str) -> None:
             fault = res.faults.get(node_id) if res else None
             if fault:
-                rows.extend([
-                    f"Max 3Ø fault: <b>{style.fmt_amps(fault.i3ph_a)}</b>",
-                    f"Max SLG fault: <b>{style.fmt_amps(fault.islg_a)}</b>",
-                    f"Min fault: <b>{style.fmt_amps(fault.imin_a)}</b>",
-                ])
+                rows.append(f"Max SLG fault: <b>{style.fmt_amps(fault.islg_a)}</b>")
+                for label, amps in (("Max 3Ø fault", fault.i3ph_a), ("Min fault", fault.imin_a)):
+                    if amps is not None:
+                        rows.append(f"{label}: <b>{style.fmt_amps(amps)}</b>")
             elif res:
-                rows.append("<span style='color:#9e9e9e'>Fault current: not available "
-                            "(fuseSize doesn't return it yet)</span>")
+                rows.append("<span style='color:#9e9e9e'>Fault current: only worked out "
+                            "at fuse locations</span>")
 
         if isinstance(element, Fuse):
             seg = f.fuse_segment(element.id)
@@ -311,10 +333,11 @@ class PropertiesPanel(QWidget):
             if link:
                 colour = "" if link.ok else " style='color:#c62828'"
                 rows.append(f"<span{colour}>Selected link: <b>{link.label()}</b> - {link.note}</span>")
+            for call in (res.fault_inputs.get(element.id, []) if res else []):
+                rows.append(_call_html(call))
             inputs = res.inputs.get(element.id) if res else None
             if inputs:
-                rows.append("fuseSize inputs:<br><span style='font-family:monospace'>" + "<br>".join(
-                    f"{k} = {v:g}" for k, v in asdict(inputs).items()) + "</span>")
+                rows.append(_call_html(inputs))
             coord = res.coordination_for(element.id) if res else None
             if coord:
                 margin = "-" if coord.margin_a is None else style.fmt_amps(coord.margin_a)

@@ -141,13 +141,11 @@ class OneLineScene(QGraphicsScene):
                              f"FLA {style.fmt_amps(max(load.amps.values()))}")
             fault = res.faults.get(nid) if res else None
             if fault:
-                lines.append(f"Max 3Ø: {style.fmt_amps(fault.i3ph_a)}<br>"
-                             f"Max SLG: {style.fmt_amps(fault.islg_a)}<br>"
-                             f"Min: {style.fmt_amps(fault.imin_a)}")
+                lines.append(f"Max SLG fault: {style.fmt_amps(fault.islg_a)}")
             item.setToolTip("<br>".join(lines))
         for sid, item in self.segments.items():
             seg = f.segments[sid]
-            lines = [f"<b>{seg.label()}</b>  {seg.phases}  {seg.conductor}",
+            lines = [f"<b>{seg.label()}</b>  {seg.phases}  {seg.conductor} {seg.conductor_type}",
                      style.fmt_ft(seg.length_ft)]
             load = ctx.loads.get(sid)
             if load:
@@ -462,6 +460,7 @@ def _add_segment(f: Feeder, doc: Document, up: str, down: str) -> str:
     avail = supply_phases(f, tree, up) if tree.reaches(up) else "ABC"
     feed = tree.parent_segment.get(up)
     conductor = f.segments[feed].conductor if feed in f.segments else DEFAULT_CONDUCTOR
+    material = f.segments[feed].conductor_type if feed in f.segments else f.settings.primary_conductor_type
     node = f.nodes[down]
     if isinstance(node, Transformer):
         if not phases_subset(node.phases, avail):
@@ -471,5 +470,6 @@ def _add_segment(f: Feeder, doc: Document, up: str, down: str) -> str:
         phases, length = avail, DEFAULT_LINE_FT
     seg_id = f.new_id("segment")
     f.add_segment(Segment(id=seg_id, name=seg_id, node_a=up, node_b=down,
-                          length_ft=length, conductor=conductor, phases=phases))
+                          length_ft=length, conductor=conductor, conductor_type=material,
+                          phases=phases))
     return seg_id

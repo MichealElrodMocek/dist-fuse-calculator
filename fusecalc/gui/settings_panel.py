@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
     QDoubleSpinBox,
     QFormLayout,
     QGroupBox,
+    QHBoxLayout,
     QLineEdit,
     QSpinBox,
     QVBoxLayout,
@@ -18,7 +19,7 @@ from PySide6.QtWidgets import (
 
 from fusecalc.gui import style
 from fusecalc.gui.document import Document
-from fusecalc.library import conductor_names
+from fusecalc.library import conductor_names, conductor_types
 from fusecalc.model import CONDUCTOR_TEMPS_C
 
 MAINLINE_LABELS = {"three_phase": "Three-phase backbone", "heaviest_path": "Heaviest-load path"}
@@ -64,14 +65,20 @@ class StudyPanel(QWidget):
         self.conductors = {}
         for label, attr in (("Primary conductor", "primary_conductor"),
                             ("Neutral conductor", "neutral_conductor")):
-            combo = QComboBox()
-            combo.addItems(conductor_names())
-            combo.activated.connect(
-                lambda _i, a=attr, c=combo: self._set("settings", a, c.currentText()))
-            self.conductors[attr] = combo
-            form.addRow(label, combo)
-        self.conductors["primary_conductor"].setToolTip(
-            "Conductor fuseSize assumes from the source to each fuse")
+            row = QHBoxLayout()
+            for key, items in ((attr, conductor_names()), (f"{attr}_type", conductor_types())):
+                combo = QComboBox()
+                combo.addItems(items)
+                combo.activated.connect(
+                    lambda _i, a=key, c=combo: self._set("settings", a, c.currentText()))
+                self.conductors[key] = combo
+                row.addWidget(combo, 1)
+            form.addRow(label, row)
+        for key in ("primary_conductor", "primary_conductor_type"):
+            self.conductors[key].setToolTip(
+                "Conductor feederTapCurrent assumes from the source to the first fuse of each branch")
+        for key in ("neutral_conductor", "neutral_conductor_type"):
+            self.conductors[key].setToolTip("Neutral on the feeder and on every lateral")
         self.temp = QComboBox()
         for t in CONDUCTOR_TEMPS_C:
             self.temp.addItem(f"{t} °C", t)

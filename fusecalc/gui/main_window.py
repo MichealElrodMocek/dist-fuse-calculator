@@ -49,9 +49,13 @@ Checks tab flags violations.</p>
 <p><b>Auto-place fuses</b> proposes transformer, lateral, sub-lateral and sectionalizing
 fuses following the rules in the Study panel. Use the <b>Fuse</b> tool (F) to add or remove
 fuses by hand; hand-placed or edited fuses are never removed by auto-placement.</p>
-<p><b>Run study</b> (F5) sizes the T link for the first fuse of each branch with
-<code>fuseSize</code>. Fuses below another fuse aren't sized yet; give transformer cutouts a
-rating in Properties.</p>
+<p><b>Autosize fuses</b> (Ctrl+Shift+F) sets every fuse back to <i>Auto</i> and sizes
+them all: transformer cutouts by the 125% rule, every other T link from the bottom of each
+branch up so it coordinates with the largest fuse below it. Undo (Ctrl+Z) restores any
+ratings you had typed in.</p>
+<p><b>Run study</b> (F5) re-runs the sizing and fault currents without touching ratings you
+typed in. It runs after every edit unless you turn off <i>Run Study Automatically</i> in the
+Protection menu.</p>
 """
 
 
@@ -165,6 +169,9 @@ class MainWindow(QMainWindow):
         self.act_place = self._action("&Auto-place Fuses...", self.auto_place, "Ctrl+Shift+A",
                                       icons.auto_place_icon(),
                                       tip="Propose fuse locations from the placement rules")
+        self.act_autosize = self._action(
+            "Auto&size Fuses", self.autosize, "Ctrl+Shift+F", icons.autosize_icon(),
+            tip="Set every fuse back to Auto and size them all (undo with Ctrl+Z)")
         self.act_clear_auto = self._action("&Clear Auto-placed Fuses", self.clear_auto_fuses)
         self.act_run = self._action("&Run Study", self.doc.run_study, "F5", icons.run_icon(),
                                     tip="Run fault study, link selection and coordination")
@@ -206,7 +213,7 @@ class MainWindow(QMainWindow):
             m.addAction(dock.toggleViewAction())
 
         m = bar.addMenu("&Protection")
-        m.addActions([self.act_place, self.act_clear_auto])
+        m.addActions([self.act_place, self.act_autosize, self.act_clear_auto])
         m.addSeparator()
         m.addActions([self.act_run, self.act_auto_run])
 
@@ -220,6 +227,7 @@ class MainWindow(QMainWindow):
         tb.addActions(list(self.tool_actions.values()))
         tb.addSeparator()
         tb.addAction(self.act_place)
+        tb.addAction(self.act_autosize)
         tb.addAction(self.act_run)
 
     # -------------------------------------------------------------- state
@@ -350,6 +358,30 @@ class MainWindow(QMainWindow):
 
     def auto_place(self) -> None:
         PlacementDialog(self.doc, self.scene, self).exec()
+
+    def autosize(self) -> None:
+        """Clear every fixed rating so the solver sizes every fuse, then run the study."""
+        fuses = [fuse for _, fuse in self.doc.feeder.fuses()]
+        if not fuses:
+            self.statusBar().showMessage(
+                "No fuses to size yet: place some with Auto-place Fuses or the Fuse tool (F).", 8000)
+            return
+        if any(fuse.rating_a is not None for fuse in fuses):
+            with self.doc.edit() as feeder:
+                for _, fuse in feeder.fuses():
+                    fuse.rating_a = None
+        self.doc.run_study()
+        res = self.doc.results
+        if res is None or not res.links:
+            reason = res.messages[0] if res and res.messages else "see the Results panel."
+            self.statusBar().showMessage(f"Autosize didn't run: {reason}", 10000)
+            return
+        sized = sum(link.rating_a is not None for link in res.links.values())
+        flagged = sum(not link.ok or link.rating_a is None for link in res.links.values())
+        msg = f"Autosized {sized} of {len(fuses)} fuses"
+        msg += (f"; {flagged} need attention (see Note in Results → Fuses)." if flagged else ".")
+        self.statusBar().showMessage(msg, 10000)
+        self.results.tabs.setCurrentIndex(0)  # Fuses tab
 
     def clear_auto_fuses(self) -> None:
         if not any(f.origin == "auto" for _, f in self.doc.feeder.fuses()):

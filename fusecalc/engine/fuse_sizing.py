@@ -29,7 +29,7 @@ latLargestXFMR_A = 75 #KVA
 latLargestXFMR_B = 75
 latLargestXFMR_C = 75
 
-def feederTapCurrent(V_ll, feederLengthFt, soilResistivity, D_an, S_sc, x_over_r, priSizeChoice, priTypeChoice, neutSizeChoice, neutTypeChoice, latPriSizeChoice, latPriTypeChoice, condTempChoice):
+def feederTapCurrent(V_ll, feederLengthFt, soilResistivity, D_an, S_sc, x_over_r, priSizeChoice, priTypeChoice, neutSizeChoice, neutTypeChoice, latPriSizeChoice, latPriTypeChoice, condTempChoice, returnPhasor=False):
 
     #note: largestChildNonTX should be the largest child fuse calculated by the lateralLGFault function. If this fuse has no child fuses calculated this way, input should be 0
     
@@ -83,7 +83,7 @@ def feederTapCurrent(V_ll, feederLengthFt, soilResistivity, D_an, S_sc, x_over_r
     # Radius and GMR in feet
     rad_feet_combined = rad_inch_combined / 12
     gmr_feet_combined = gmr_inch_combined / 12
-    rad_pri_feet = rad_feet_combined[neutTypeChoice][priSizeChoice]
+    rad_pri_feet = rad_feet_combined[priTypeChoice][priSizeChoice]
     rad_neut_feet = rad_feet_combined[neutTypeChoice][neutSizeChoice]
     gmr_pri_feet = gmr_feet_combined[priTypeChoice][priSizeChoice]
     gmr_neut_feet = gmr_feet_combined[neutTypeChoice][neutSizeChoice]
@@ -133,16 +133,21 @@ def feederTapCurrent(V_ll, feederLengthFt, soilResistivity, D_an, S_sc, x_over_r
 
     Z_sum = Z1_total + Z2_total + Z0_total
 
-    I_012 = (3.0 * V_ph) / Z_sum
+    I_012 = V_ph / Z_sum    # I0 = I1 = I2 for a SLG fault
 
     I_fLG_phasor = 3.0 * I_012
     I_fLG_magnitude = abs(I_fLG_phasor)
     I_f_feeder = I_fLG_magnitude
 
+    # returnPhasor=True hands the complex fault current to latFuseCurrent so it
+    # can recover the exact upstream impedance instead of assuming the source X/R
+    if returnPhasor:
+        return I_fLG_phasor
     return I_f_feeder
 
-def latFuseCurrent(V_ll, I_f_previous, x_over_r, latLengthFt, latPriSizeChoice, latPriTypeChoice, latNeutSizeChoice, latNeutTypeChoice, soilResistivity, condTempChoice, D_an):
-    # note: feederLengthFt is the distance from the previous fuse to this one
+def latFuseCurrent(V_ll, I_f_previous, x_over_r, latLengthFt, latPriSizeChoice, latPriTypeChoice, latNeutSizeChoice, latNeutTypeChoice, soilResistivity, condTempChoice, D_an, returnPhasor=False):
+    # note: latLengthFt is the distance from the previous fuse to this one
+    # note: I_f_previous may be a magnitude or the complex phasor returned with returnPhasor=True
     
     #assumptions
     freq = 60 #Hz
@@ -206,10 +211,15 @@ def latFuseCurrent(V_ll, I_f_previous, x_over_r, latLengthFt, latPriSizeChoice, 
     #calculations
     V_ph = V_ll / math.sqrt(3)
 
-    abs_z_sum_tap = (3.0 * V_ph) / I_f_previous
-    r_sum_tap = abs_z_sum_tap / math.sqrt((x_over_r ** 2) + 1.0)
-    x_sum_tap = r_sum_tap * x_over_r
-    Z_sum_tap = complex(r_sum_tap, x_sum_tap)
+    if isinstance(I_f_previous, complex):
+        # exact: the phasor carries the angle of everything upstream
+        Z_sum_tap = (3.0 * V_ph) / I_f_previous
+    else:
+        # magnitude only: assume the upstream impedance has the source X/R
+        abs_z_sum_tap = (3.0 * V_ph) / I_f_previous
+        r_sum_tap = abs_z_sum_tap / math.sqrt((x_over_r ** 2) + 1.0)
+        x_sum_tap = r_sum_tap * x_over_r
+        Z_sum_tap = complex(r_sum_tap, x_sum_tap)
 
     r_phase_lat = r_allTemp[latPriTypeChoice][condTempChoice][latPriSizeChoice]
     r_neutral_lat = r_allTemp[latNeutTypeChoice][condTempChoice][latNeutSizeChoice]
@@ -229,13 +239,16 @@ def latFuseCurrent(V_ll, I_f_previous, x_over_r, latLengthFt, latPriSizeChoice, 
 
     Z_sum_lat_total = Z_sum_tap + (2.0 * Z_line1_lat) + Z_line0_lat
 
-    I_fLG_lat_magnitude = abs(3.0 * V_ph / Z_sum_lat_total)
+    I_fLG_lat_phasor = 3.0 * V_ph / Z_sum_lat_total
+    I_fLG_lat_magnitude = abs(I_fLG_lat_phasor)
     I_f_lateral = I_fLG_lat_magnitude
 
+    if returnPhasor:
+        return I_fLG_lat_phasor
     return I_f_lateral
    
 
-def fuseSize(V_ll, I_LG_mag, downstreamPriTypeChoice, latLoadA, latLoadB, latLoadC, latLargestXFMR_A, latLargestXFMR_B, latLargestXFMR_C, largestChildNonTX):
+def fuseSize(V_ll, I_LG_mag, downstreamPriSizeChoice, latLoadA, latLoadB, latLoadC, latLargestXFMR_A, latLargestXFMR_B, latLargestXFMR_C, largestChildNonTX):
     
     # Max Ampacity vector (Amperes)
     ampacity = np.array([140, 185, 240, 275, 365, 515, 640, 710])
@@ -274,21 +287,27 @@ def fuseSize(V_ll, I_LG_mag, downstreamPriTypeChoice, latLoadA, latLoadB, latLoa
     transCurrent = max(latLargestXFMR_Vec) / V_ph_kV * 1.25
 
     #calculate the smallest fuse size that doesn't trip the largest transformer at 125% loading
+    childFuseInd = -5
     for a in range(len(tSizes)):
         if transCurrent < tSizes[a]:
             childFuse = tSizes[a]
             childFuseInd = a
             break
+    if childFuseInd == -5:
+        childFuse = tSizes[-1]
+        childFuseInd = len(tSizes) - 1
+        warnings.warn("Largest downstream transformer needs more than a 200T link. Defaulting to maximum 200T.")
 
     #if the parent has a larger non-tx child fuse, then we use that as the largest child fuse
     if largestChildNonTX > childFuse:
         for a in range(len(tSizes)):
-            if largestChildNonTX == tSizes[a]:
+            if largestChildNonTX <= tSizes[a]:    # smallest T link that is at least the child fuse
                 childFuse = tSizes[a]
                 childFuseInd = a
                 break
     if childFuse >= 140:
         parentSize = 200
+        parentSizeInd = len(parent) - 1
     else:
         # now, with the child fuse and the fault current, we can calculate the fuse size
         parentSizeInd = -5
@@ -298,15 +317,15 @@ def fuseSize(V_ll, I_LG_mag, downstreamPriTypeChoice, latLoadA, latLoadB, latLoa
                 parentSizeInd = a
                 break
             
-        #we need to make sure this fuse can handle typical load
-        latCurrent = max(latLoadVec) / V_ph_kV
+    #we need to make sure this fuse can handle typical load
+    latCurrent = max(latLoadVec) / V_ph_kV
 
-        minLatFuseInd = -5
-        for a in range(len(tSizes)):
-            if latCurrent < tSizes[a]:
-                minLatFuse = tSizes[a]
-                minLatFuseInd = a
-                break
+    minLatFuseInd = -5
+    for a in range(len(tSizes)):
+        if latCurrent < tSizes[a]:
+            minLatFuse = tSizes[a]
+            minLatFuseInd = a
+            break
 
     if parentSizeInd == -5:
         parentSize = 200
@@ -317,8 +336,35 @@ def fuseSize(V_ll, I_LG_mag, downstreamPriTypeChoice, latLoadA, latLoadB, latLoa
     else:
         parentSize = max([parentSize, minLatFuse])
 
-    if ampacity[latPriSizeChoice] < parentSize:
+    if ampacity[downstreamPriSizeChoice] < parentSize:
         warnings.warn("Required Fuse size is too large for selected downstream primary. Defaulting to maximum fuse for chosen wire size")
-        parentSize = maxFuseForLat[downstreamPriTypeChoice]
+        parentSize = maxFuseForLat[downstreamPriSizeChoice]
     fuseSize = parentSize
     return fuseSize
+
+def xfmrFuseSize(V_ll, latLargestXFMR_A, latLargestXFMR_B, latLargestXFMR_C):
+    # transformer cutout: the same 125% rule fuseSize uses for the largest transformer fuse below it
+
+    tSizes = [1, 2, 3, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50, 65, 80, 100, 140, 200]
+
+    # calculations
+    latLargestXFMR_Vec = [latLargestXFMR_A, latLargestXFMR_B, latLargestXFMR_C]
+
+    V_ph = V_ll / math.sqrt(3)
+
+    # now, we calculate the largest transformer fuse
+    V_ph_kV = V_ph / 1000
+    transCurrent = max(latLargestXFMR_Vec) / V_ph_kV * 1.25
+
+    #calculate the smallest fuse size that doesn't trip the largest transformer at 125% loading
+    childFuseInd = -5
+    for a in range(len(tSizes)):
+        if transCurrent < tSizes[a]:
+            childFuse = tSizes[a]
+            childFuseInd = a
+            break
+    if childFuseInd == -5:
+        childFuse = tSizes[-1]
+        warnings.warn("Transformer needs more than a 200T link. Defaulting to maximum 200T.")
+
+    return childFuse

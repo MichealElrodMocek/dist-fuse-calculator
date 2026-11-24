@@ -1,10 +1,19 @@
 """Contract between the GUI and the fuse sizing solver.
 
-The solver is ``fuseSize`` in :mod:`fusecalc.engine.fuse_sizing`. It sizes the
-first T link of a branch from 16 scalar inputs and returns its rating. The GUI
-works out those inputs for each fuse from the drawing
-(:class:`FuseSizeInputs`, named exactly as ``fuseSize`` names them), calls it,
-and displays the :class:`StudyResults`.
+The solver is :mod:`fusecalc.engine.fuse_sizing`, three functions:
+
+* ``feederTapCurrent``: SLG fault current at a point on the feeder primary
+  (used at the first fuse of each branch),
+* ``latFuseCurrent``: SLG fault current one lateral run further on, from the
+  fault current where the run starts (used between fuses),
+* ``fuseSize``: the T link for a fuse, from the fault current there, the
+  load and largest transformer below it, and its largest child fuse,
+* ``xfmrFuseSize``: the T link for a transformer cutout (fuseSize's 125 %
+  rule on its own).
+
+The GUI works out each function's arguments from the drawing (the
+``*Inputs`` records below, named exactly as the solver names them), calls
+it, and displays the :class:`StudyResults`.
 
 Nothing in here imports Qt, so the solver and this adapter can be tested
 without a display.
@@ -64,13 +73,13 @@ def build_context(feeder: Feeder) -> StudyContext:
     )
 
 
-@dataclass
-class FuseSizeInputs:
-    """One call to ``fuseSize``: its arguments, names and units unchanged.
+# The ``*Choice`` fields below are indices into fuse_sizing's own tables
+# (condSize, condType, condTempVec), not physical values.
 
-    The ``*Choice`` fields are indices into fuseSize's own tables (condSize,
-    condTempVec), not physical values.
-    """
+
+@dataclass
+class FeederTapInputs:
+    """One call to ``feederTapCurrent``: its arguments, names and units unchanged."""
 
     V_ll: float  # volts, line to line
     feederLengthFt: float  # feeder primary from the source to the fuse
@@ -79,13 +88,58 @@ class FuseSizeInputs:
     S_sc: float  # VA, fault power at the substation transformer
     x_over_r: float
     priSizeChoice: int
+    priTypeChoice: int
     neutSizeChoice: int
-    latPriSizeChoice: int
+    neutTypeChoice: int
+    latPriSizeChoice: int  # unused by feederTapCurrent; sent as the fused segment's
+    latPriTypeChoice: int
     condTempChoice: int
+
+
+@dataclass
+class LatFuseInputs:
+    """One call to ``latFuseCurrent`` for one drawn segment.
+
+    ``I_f_previous`` is the complex fault current where the segment starts
+    (``returnPhasor=True`` from the previous call), so chaining calls along a
+    path is exact.
+    """
+
+    V_ll: float
+    I_f_previous: complex  # A, fault current phasor at the upstream end
+    x_over_r: float
+    latLengthFt: float  # this segment's length
+    latPriSizeChoice: int  # this segment's conductor
+    latPriTypeChoice: int
+    latNeutSizeChoice: int  # Study panel neutral
+    latNeutTypeChoice: int
+    soilResistivity: float
+    condTempChoice: int
+    D_an: float
+
+
+@dataclass
+class FuseSizeInputs:
+    """One call to ``fuseSize``: its arguments, names and units unchanged."""
+
+    V_ll: float
+    I_LG_mag: float  # A, SLG fault current at the fuse
+    downstreamPriSizeChoice: int  # the fused segment's conductor
     latLoadA: float  # kVA downstream of the fuse, per phase
     latLoadB: float
     latLoadC: float
     latLargestXFMR_A: float  # kVA of the largest transformer downstream, per phase
+    latLargestXFMR_B: float
+    latLargestXFMR_C: float
+    largestChildNonTX: float  # largest fuse directly below that isn't a transformer cutout
+
+
+@dataclass
+class XfmrFuseInputs:
+    """One call to ``xfmrFuseSize`` for a transformer cutout."""
+
+    V_ll: float
+    latLargestXFMR_A: float  # kVA of the transformer, per phase
     latLargestXFMR_B: float
     latLargestXFMR_C: float
 
@@ -94,17 +148,17 @@ class FuseSizeInputs:
 class NodeFault:
     """Fault currents at a node, in amperes (symmetrical RMS).
 
-    fuseSize doesn't return fault currents yet, so the GUI shows these as
-    not available.
+    fuse_sizing computes the bolted SLG fault only, at fuse locations, so the
+    three-phase and minimum faults stay None.
     """
 
-    i3ph_a: float  # maximum: bolted three-phase (only meaningful on 3-phase line)
     islg_a: float  # maximum: bolted single-line-to-ground
-    imin_a: float  # minimum: e.g. SLG through fault resistance; sets fuse reach
+    i3ph_a: float | None = None  # maximum: bolted three-phase
+    imin_a: float | None = None  # minimum: e.g. SLG through fault resistance
 
     @property
     def imax_a(self) -> float:
-        return max(self.i3ph_a, self.islg_a)
+        return max(i for i in (self.i3ph_a, self.islg_a) if i is not None)
 
 
 @dataclass
@@ -127,8 +181,9 @@ class LinkSelection:
 
 @dataclass
 class CoordinationResult:
-    """fuseSize checks coordination internally but doesn't return it yet, so
-    every pair comes back ``"not_checked"``."""
+    """fuseSize coordinates each fuse with its largest child internally but
+    doesn't return the table limit, so every pair comes back
+    ``"not_checked"`` with the fault current at the protecting fuse filled in."""
 
     protecting_fuse: str  # downstream link, must clear first
     protected_fuse: str  # upstream link, must not be damaged
@@ -147,7 +202,11 @@ class CoordinationResult:
 @dataclass
 class StudyResults:
     engine: str
-    inputs: dict[str, FuseSizeInputs] = field(default_factory=dict)  # by fuse id
+    inputs: dict[str, FuseSizeInputs | XfmrFuseInputs] = field(default_factory=dict)  # by fuse id
+    # by fuse id: the fault-current calls that reached it (one feederTapCurrent
+    # for the first fuse of a branch, else one latFuseCurrent per segment from
+    # the fuse above)
+    fault_inputs: dict[str, list[FeederTapInputs | LatFuseInputs]] = field(default_factory=dict)
     faults: dict[str, NodeFault] = field(default_factory=dict)  # by node id
     links: dict[str, LinkSelection] = field(default_factory=dict)  # by fuse id
     coordination: list[CoordinationResult] = field(default_factory=list)

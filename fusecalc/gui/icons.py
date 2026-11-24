@@ -87,6 +87,20 @@ def auto_place_icon() -> QIcon:
     return _icon(draw)
 
 
+def autosize_icon() -> QIcon:
+    """A fuse body with a 'T' link rating on it."""
+    def draw(p: QPainter) -> None:
+        p.setPen(QPen(style.INK, 2))
+        p.drawLine(QLineF(2, 20, 30, 20))
+        p.setBrush(QBrush(Qt.GlobalColor.white))
+        p.setPen(QPen(style.STATUS_COLORS["pass"], 2))
+        p.drawRect(QRectF(7, 15, 18, 10))
+        p.setPen(QPen(style.INK, 2.2))
+        p.drawLine(QLineF(10, 4, 22, 4))  # the "T" of a T link
+        p.drawLine(QLineF(16, 4, 16, 12))
+    return _icon(draw)
+
+
 def run_icon() -> QIcon:
     def draw(p: QPainter) -> None:
         p.setPen(Qt.PenStyle.NoPen)
